@@ -18,14 +18,17 @@ class Tweet: NSObject {
     var screenName: NSString?
     var userName: NSString?
     var profileUrl: NSString?
-    
+    var tweetID:NSString?
     init(dictionary: NSDictionary) {
         //deserialization code
         text = dictionary["text"] as? String as NSString?
         retweetCount = (dictionary["retweet_count"] as? Int) ?? 0
-        favoritesCount = (dictionary["favourites_count"] as? Int) ?? 0
+        favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
+        tweetID = dictionary["id_str"] as? String as NSString?
+        print(dictionary)
+        print("assigned tweet ID: \(tweetID)")
         let userdictionary = dictionary["user"] as? NSDictionary
-        
+
         //user data
         if let _userdictionary = userdictionary {
             screenName = _userdictionary["screen_name"] as? String as NSString?

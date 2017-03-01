@@ -44,10 +44,41 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TweetCell", for: indexPath) as! tweetsTableViewCell
-        cell.tweet = tweets[indexPath.row]
+        let tweet = tweets[indexPath.row]
+        cell.textInfoLabel.text = tweet.text as String?
+        
+        //screen name
+        var screenName = "@"
+        screenName.append((tweet.screenName as String?)!)
+        
+        cell.userIDLabel.text = screenName
+        cell.userNameLabel.text = tweet.userName as String?
+        cell.favoriteNum.text = String(tweet.favoritesCount)
+        cell.retweetNum.text = String(tweet.retweetCount)
+        // time conversion
+        let timeAgo = Int(Date().timeIntervalSince(tweet.timestamp! as Date))
+        let ago = convertTimeAgo(seconds: timeAgo)
+        
+        cell.dateLabel.text = ago
+        cell.tweetID = tweet.tweetID
+        //image profile
+        let profileUrl = URL(string: tweet.profileUrl as String!)
+        cell.profileImageView.setImageWith(profileUrl!)
         return cell
     }
     
+    func convertTimeAgo(seconds: Int) -> String {
+        var result: String?
+        
+        if(seconds/60 <= 59) {
+            result = "\(seconds/60) m"
+        } else if (seconds/3600 <= 23) {
+            result = "\(seconds/3600) h"
+        } else {
+            result = "\(seconds/216000) d"
+        }
+        return result!
+    }
 
     
     

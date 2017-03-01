@@ -62,6 +62,7 @@ class TwitterClient: BDBOAuth1SessionManager {
         
         }
     
+    
     func currentAccount(success:@escaping (User) -> (), failure:@escaping (Error) -> ()) {
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { ( task:
             URLSessionDataTask?, response: Any?) -> Void in
@@ -78,5 +79,34 @@ class TwitterClient: BDBOAuth1SessionManager {
         deauthorize()
         NotificationCenter.default.post(name: NSNotification.Name("UserDidLogout"), object: nil)
     }
+    
+    
+    func retweet(success: @escaping (Tweet) -> (), failure: @escaping (Error) -> (), tweetID: String) {
+        post("1.1/statuses/retweet/\(tweetID).json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
+            print("retweet")
+            
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)
+        }
+    }
+    
+    
+    func favorite(success: @escaping (Tweet) -> (), failure: @escaping (Error) -> (), tweetID: String) {
+        print("\(Int(tweetID))")
+        post("1.1/favorites/create.json", parameters: ["id": tweetID], progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
+            print("favorite")
+            
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)
+        }
+    }
+    
+    
 }
 

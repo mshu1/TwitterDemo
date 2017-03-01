@@ -20,47 +20,62 @@ class tweetsTableViewCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     
     @IBOutlet weak var textInfoLabel: UILabel!
-    var tweet: Tweet! {
-        didSet{
-            self.textInfoLabel.text = tweet.text as String?
-            
-            //screen name
-            var screenName = "@"
-            screenName.append((tweet.screenName as String?)!)
-            
-            self.userIDLabel.text = screenName
-            self.userNameLabel.text = tweet.userName as String?
-            
-            // time conversion
-            let timeAgo = Int(Date().timeIntervalSince(tweet.timestamp! as Date))
-            let ago = convertTimeAgo(seconds: timeAgo)
-            
-            dateLabel.text = ago
-            
-            //image profile 
-            let profileUrl = URL(string: tweet.profileUrl as String!)
-            profileImageView.setImageWith(profileUrl!)
+    
+    @IBOutlet weak var favoriteButton: UIButton!
+    
+    @IBOutlet weak var retreatButton: UIButton!
 
-        }
-    }
+    @IBOutlet weak var favoriteNum: UILabel!
+    
+    @IBOutlet weak var retweetNum: UILabel!
+    var user: User!
+    var tweetID:NSString?
+    var tweet: Tweet!
 
-    func convertTimeAgo(seconds: Int) -> String {
-        var result: String?
-        
-        if(seconds/60 <= 59) {
-            result = "\(seconds/60) m"
-        } else if (seconds/3600 <= 23) {
-            result = "\(seconds/3600) h"
-        } else {
-            result = "\(seconds/216000) d"
-        }
-        return result!
-    }
+
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
 
         }
+    
+    
+    @IBAction func onRetweet(_ sender: Any) {
+        print("tweet ID: \(tweetID)")
+        
+        self.retreatButton.setImage(UIImage(named: "retweet-icon-green"), for: UIControlState.normal)
+        self.retweetNum.textColor = UIColor.green
+        
+        TwitterClient.sharedInstance?.retweet(success: { (tweet: Tweet) in
+            print(tweet.retweetCount)
+            self.retweetNum.text = "\(tweet.retweetCount)"
+        }, failure: { (error: Error) in
+            print(error.localizedDescription)
+        }, tweetID: tweetID as! String)
+    }
+    
+    
+    @IBAction func onFavorite(_ sender: Any) {
+        print("tweet ID: \(tweetID)")
+        
+        self.favoriteButton.setImage(UIImage(named: "favor-icon-red"), for: UIControlState.normal)
+        self.favoriteNum.textColor = UIColor.red
+        
+        TwitterClient.sharedInstance?.favorite(success: { (tweet: Tweet) in
+            print(tweet.favoritesCount)
+            self.favoriteNum.text = "\(tweet.favoritesCount)"
+        }, failure: { (error: Error) in
+            print(error.localizedDescription)
+        }, tweetID: tweetID as! String)
+    }
+        
+    
+    
+    
+    
+    
+    
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
