@@ -31,6 +31,7 @@ class tweetsTableViewCell: UITableViewCell {
     var user: User!
     var tweetID:NSString?
     var tweet: Tweet!
+    weak var delegate: refreshDelegate?
 
 
 
@@ -50,6 +51,7 @@ class tweetsTableViewCell: UITableViewCell {
         TwitterClient.sharedInstance?.retweet(success: { (tweet: Tweet) in
             print(tweet.retweetCount)
             self.retweetNum.text = "\(tweet.retweetCount)"
+            self.tweet = tweet
         }, failure: { (error: Error) in
             print(error.localizedDescription)
         }, tweetID: tweetID as! String)
@@ -65,6 +67,7 @@ class tweetsTableViewCell: UITableViewCell {
         TwitterClient.sharedInstance?.favorite(success: { (tweet: Tweet) in
             print(tweet.favoritesCount)
             self.favoriteNum.text = "\(tweet.favoritesCount)"
+            self.tweet = tweet
         }, failure: { (error: Error) in
             print(error.localizedDescription)
         }, tweetID: tweetID as! String)

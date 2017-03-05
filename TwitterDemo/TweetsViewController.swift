@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, refreshDelegate {
     var tweets: [Tweet]!
     
     @IBOutlet weak var tableView: UITableView!
@@ -95,14 +95,50 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if (segue.identifier == "selectCellSegue") {
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)
+        let sentTweet = tweets[indexPath!.row]
+        let vc = segue.destination as! DetailTweetViewController
+        vc.tweet = sentTweet
+        vc.delegate = self
+        }
+        if (segue.identifier == "postTweetSegue"){
+            let vc = segue.destination.childViewControllers[0] as! EditTweetViewController
+            vc.delegate = self
+            vc.isReply = 0
+            // Pass the selected object to the new view controller.
+        }
+        if (segue.identifier == "replyFromCell") {
+            let button = sender as! UIButton
+            let cell = button.superview?.superview as! UITableViewCell
+            let indexPath = tableView.indexPath(for: cell)
+            let sentTweet = tweets[indexPath!.row]
+           let vc = segue.destination.childViewControllers[0] as! EditTweetViewController
+            vc.delegate = self
+            vc.isReply = 1
+            vc.replyID = sentTweet.tweetID
+            vc.replyToUser = sentTweet.screenName
+        }
+        
+        
     }
-    */
+    
+    func didChangeHome() {
+        TwitterClient.sharedInstance?.homeTimeLine(success: { (tweets: [Tweet]) -> () in
+            self.tweets = tweets
+            //for tweet in self.tweets {
+            //print(tweet.text!)
+            //}
+            self.tableView.reloadData()
+            
+        }, failure: { (error: Error) -> () in
+            print(error.localizedDescription)
+        })
+    }
+    
+
 
 }

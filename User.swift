@@ -14,6 +14,10 @@ class User: NSObject {
     var profileUrl: NSURL?
     var tagline: NSString?
     var dictionary: NSDictionary?
+    var tweetsNum: Int = 0
+    var followersNum: Int = 0
+    var friendsNum: Int = 0
+    var backgroundUrl: NSURL?
     
     init(dictionary: NSDictionary) {
         //deserialization code
@@ -21,10 +25,21 @@ class User: NSObject {
         name = dictionary["name"] as? String as NSString?
         screenname = dictionary["screen_name"] as? String as NSString?
         
+        
+        followersNum = (dictionary["followers_count"] as? Int) ?? 0
+        friendsNum = (dictionary["friends_count"] as? Int) ?? 0
+        tweetsNum = (dictionary["statuses_count"] as? Int) ?? 0
+        
         let profileUrlString = dictionary["profile_image_url_https"] as? String
         if let profileUrlString = profileUrlString {
             profileUrl = NSURL(string: profileUrlString)
         }
+        
+        let backgroundUrlString = dictionary["profile_background_image_url_https"] as? String
+        if let backgroundUrlString = backgroundUrlString {
+            backgroundUrl = NSURL(string: backgroundUrlString)
+        }
+        
         tagline = dictionary["description"] as? String as NSString?
     }
     
