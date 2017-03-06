@@ -58,12 +58,16 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         // time conversion
         let timeAgo = Int(Date().timeIntervalSince(tweet.timestamp! as Date))
         let ago = convertTimeAgo(seconds: timeAgo)
-        
+        cell.tweet = tweet
         cell.dateLabel.text = ago
         cell.tweetID = tweet.tweetID
         //image profile
         let profileUrl = URL(string: tweet.profileUrl as String!)
+        //let image = UIImageView()
+        //image.setImageWith(profileUrl!)
         cell.profileImageView.setImageWith(profileUrl!)
+        cell.profiledelegate = self
+
         return cell
     }
     
@@ -141,4 +145,14 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
 
 
+}
+
+extension TweetsViewController: TweetCellDelegate{
+    func profileImageTapped(cell: tweetsTableViewCell, user: NSDictionary) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController") as? ProfileViewController{
+            profileVC.user = user //set the profile user before your push
+            self.navigationController?.pushViewController(profileVC, animated: true)
+        }
+    }
 }

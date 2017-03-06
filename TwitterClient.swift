@@ -131,6 +131,20 @@ class TwitterClient: BDBOAuth1SessionManager {
         
     }
     
+    func fetchUserInfor(success: @escaping (User) -> (), failure: @escaping (Error) -> (), userScreenName: String) {
+        post("1.1/users/show.json", parameters: ["status":userScreenName], progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
+            print("fetchedUserInfor")
+            let dictionary = response as! NSDictionary
+            let user = User(dictionary: dictionary)
+            success(user)
+        }) { (task: URLSessionDataTask?, error: Error) in
+            failure(error)
+        }
+
+    }
+    
+    
+    
     
 }
 
